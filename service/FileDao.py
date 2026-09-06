@@ -2,13 +2,8 @@ from datetime import datetime
 
 from utils.DatabaseUtil import get_db_connection
 
-CONN = None
-
 def insert_file(file_id, filename, size, extension, storage_url):
-    global CONN
-
-    if CONN is None:
-        CONN = get_db_connection()
+    conn = get_db_connection()
 
     sql = """
         INSERT INTO file (id, filename, size, extension, storage_url, created_at)
@@ -17,8 +12,8 @@ def insert_file(file_id, filename, size, extension, storage_url):
 
     parameters = (file_id, filename, size, extension, storage_url, datetime.now())
 
-    cursor = CONN.cursor()
+    cursor = conn.cursor()
     cursor.execute(sql, parameters)
-    CONN.commit()
-    CONN.close()
+    conn.commit()
+    conn.close()
 
