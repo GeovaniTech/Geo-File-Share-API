@@ -3,7 +3,7 @@ import os
 
 from flask import jsonify, request, Blueprint
 
-from service import FileDao
+from service import FileDao, ClientFilesDao
 from storage import AzureUpload
 from utils import FileUtil
 
@@ -15,6 +15,13 @@ files_bp = Blueprint('files', __name__)
 @files_bp.route("/files/upload", methods=["POST"])
 def files_upload():
     try:
+        client_id = request.args.get("clientId")
+
+        if client_id is None:
+            return jsonify(
+                message = "ClientId is not provided"
+            )
+
         if 'file' not in request.files:
             return jsonify(
                 message = "No file part"
@@ -37,11 +44,13 @@ def files_upload():
                 message = f"File too large, max value accepted is {MAX_FILE_SIZE / 1024 / 1024}mb"
             )
 
-        file_id = uuid.uuid4()
+        file_id = str(uuid.uuid4())
         filename = f"{file_id}.{extension}"
 
         url = AzureUpload.upload_file_to_azure(filename, file)
-        FileDao.insert_file(str(file_id), filename, file_size, extension, url)
+
+        FileDao.insert_file(file_id, filename, file_size, extension, url)
+        ClientFilesDao.insert_file_for_client(client_id, file_id)
 
         return jsonify(
             fileUrl = f"{url}"
@@ -49,5 +58,5 @@ def files_upload():
     except Exception as ex:
         return jsonify(
             message = "Something went wrong",
-            error = ex
+            error = ex.args
         ), 500

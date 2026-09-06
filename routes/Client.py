@@ -17,5 +17,5 @@ def insert_client():
         print(ex)
         return jsonify(
             message = "Something went wrong. Please try again.",
-            error = ex
+            error = ex.args
         ), 500
