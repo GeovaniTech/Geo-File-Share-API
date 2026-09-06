@@ -5,7 +5,7 @@ from flask import jsonify, request, Blueprint
 
 from service import FileDao, ClientFilesDao
 from storage import AzureUpload
-from utils import FileUtil
+from utils import FileUtil, ShortUrlUtil
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 MAX_FILE_SIZE = 20 * 1024 * 1024
@@ -47,7 +47,8 @@ def files_upload():
         file_id = str(uuid.uuid4())
         filename = f"{file_id}.{extension}"
 
-        url = AzureUpload.upload_file_to_azure(filename, file)
+        long_url = AzureUpload.upload_file_to_azure(filename, file)
+        url = ShortUrlUtil.shorten_url(long_url)
 
         FileDao.insert_file(file_id, filename, file_size, extension, url)
         ClientFilesDao.insert_file_for_client(client_id, file_id)
