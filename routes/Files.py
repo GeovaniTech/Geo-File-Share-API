@@ -8,6 +8,7 @@ from storage import AzureUpload
 from utils import FileUtil
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+MAX_FILE_SIZE = 20 * 1024 * 1024
 
 files_bp = Blueprint('files', __name__)
 
@@ -30,6 +31,11 @@ def files_upload():
         file.seek(0, os.SEEK_END)
         file_size = file.tell()
         file.seek(0)
+
+        if file_size > MAX_FILE_SIZE:
+            return jsonify(
+                message = f"File too large, max value accepted is {MAX_FILE_SIZE / 1024 / 1024}mb"
+            )
 
         file_id = uuid.uuid4()
         filename = f"{file_id}.{extension}"
