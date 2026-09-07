@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     project_root = os.path.abspath(os.path.dirname(__file__))
 
-    if project_root == '/projects/Geo-File-Share-Api':
+    if project_root == '/projects/Geo-File-Share-API':
         class StandaloneApplication(BaseApplication):
             def __init__(self, app, options=None):
                 self.options = options or {}
