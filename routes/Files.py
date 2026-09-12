@@ -4,7 +4,7 @@ import os
 from flask import jsonify, request, Blueprint
 
 from service import FileDao, ClientFilesDao
-from storage import AzureUpload
+from storage import AzureStorage
 from utils import FileUtil, ShortUrlUtil
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -47,7 +47,7 @@ def files_upload():
         file_id = str(uuid.uuid4())
         filename = f"{file_id}.{extension}"
 
-        long_url = AzureUpload.upload_file_to_azure(filename, file)
+        long_url = AzureStorage.upload_file_to_azure(filename, file)
         url = ShortUrlUtil.shorten_url(long_url)
 
         FileDao.insert_file(file_id, filename, file_size, extension, url)
@@ -55,6 +55,32 @@ def files_upload():
 
         return jsonify(
             fileUrl = f"{url}"
+        )
+    except Exception as ex:
+        return jsonify(
+            message = "Something went wrong",
+            error = ex.args
+        ), 500
+
+
+@files_bp.route("/files/delete", methods=["DELETE"])
+def files_delete():
+    try:
+        client_id = request.json['clientId']
+        file_url = request.json['fileUrl']
+
+        success_delete_azure = AzureStorage.delete_file_from_azure(file_url)
+
+        if success_delete_azure:
+            ClientFilesDao.delete_file_from_client(client_id, file_url)
+            FileDao.delete_file(file_url)
+        else :
+            return jsonify(
+                message = "Something went wrong while deleting file on Azure"
+            ), 500
+
+        return jsonify(
+            message = "File deleted"
         )
     except Exception as ex:
         return jsonify(
