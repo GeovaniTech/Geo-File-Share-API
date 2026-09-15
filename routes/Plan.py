@@ -24,3 +24,21 @@ def upsert_plan():
         return jsonify(
             message = ex.args
         ), 500
+
+
+
+@plans_bp.route("/plans/plan", methods=["GET"])
+def get_plan():
+    try:
+        plan_id = request.args.get("planId")
+
+        plan = PlanDao.find_plan(plan_id)
+
+        if plan is None:
+            return jsonify({"planId": plan_id}), 404
+        else:
+            return plan, 200
+    except Exception as ex:
+        return jsonify(
+            message = ex.args
+        ), 500

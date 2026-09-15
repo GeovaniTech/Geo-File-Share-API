@@ -1,6 +1,8 @@
 import json
 from datetime import datetime
 
+from psycopg2.extras import RealDictCursor
+
 from utils.DatabaseUtil import get_db_connection
 
 
@@ -35,3 +37,17 @@ def upsert_plan(plan_id, title, parameters, price, currency, is_active):
     conn.close()
 
     return operation
+
+
+def find_plan(plan_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM plan WHERE type = %s", (plan_id,))
+    plan = cursor.fetchone()
+
+    if plan is None:
+        return None
+    else :
+        return json.dumps(plan, default=str)
+
