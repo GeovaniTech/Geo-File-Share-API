@@ -7,11 +7,13 @@ from gunicorn.app.base import BaseApplication
 from routes.Client import clients_bp
 from routes.Files import files_bp
 from routes.Common import commons_bp
+from routes.Plan import plans_bp
 
 app = Flask(__name__)
 app.register_blueprint(files_bp, url_prefix="/fileshare/")
 app.register_blueprint(commons_bp, url_prefix="/fileshare/")
 app.register_blueprint(clients_bp, url_prefix="/fileshare/")
+app.register_blueprint(plans_bp, url_prefix="/fileshare/")
 
 if __name__ == '__main__':
     load_dotenv()
