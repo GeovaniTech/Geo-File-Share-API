@@ -7,8 +7,9 @@ clients_bp = Blueprint('clients_bp', __name__, url_prefix='/clients')
 def insert_client():
     try:
         client_id = request.json['clientId']
+        plan_id = request.json['planId']
 
-        ClientDao.insert_client(client_id)
+        ClientDao.insert_client(client_id, plan_id)
 
         return jsonify(
             message = f"Client {client_id} has been created"
@@ -16,6 +17,22 @@ def insert_client():
     except Exception as ex:
         print(ex)
         return jsonify(
-            message = "Something went wrong. Please try again.",
             error = ex.args
         ), 500
+
+
+@clients_bp.route('/clients', methods=['PATCH'])
+def update_client_plan():
+    try:
+        client_id = request.json['clientId']
+        plan_id = request.json['planId']
+
+        ClientDao.update_client_plan(client_id, plan_id)
+
+        return jsonify(
+            message = f"Client {client_id} has been updated"
+        ), 200
+    except Exception as ex:
+        return jsonify(
+            message = ex.args
+        )
