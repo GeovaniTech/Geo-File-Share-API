@@ -26,3 +26,18 @@ def delete_file_from_client(client_id, file_url):
     cursor.execute(sql, (client_id, file_url))
     conn.commit()
     conn.close()
+
+
+def get_count_client_files(client_id):
+    conn = get_db_connection()
+
+    sql = """
+        SELECT COUNT(*) FROM client_files WHERE client_id = %s
+    """
+
+    cursor = conn.cursor()
+    cursor.execute(sql, (client_id,))
+    count = cursor.fetchone()[0]
+    conn.close()
+
+    return count

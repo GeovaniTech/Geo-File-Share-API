@@ -23,3 +23,15 @@ def update_client_plan(client_id, plan_id):
     conn.commit()
     conn.close()
 
+
+def find_client_plan_parameters(client_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    sql = "SELECT parameters FROM Client c INNER JOIN plan p ON c.plan_id = p.type WHERE c.id = %s"
+    cursor.execute(sql, (client_id,))
+
+    parameters = cursor.fetchone()[0]
+    conn.close()
+
+    return parameters

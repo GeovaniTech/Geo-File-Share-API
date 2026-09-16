@@ -3,12 +3,9 @@ import os
 
 from flask import jsonify, request, Blueprint
 
-from service import FileDao, ClientFilesDao
+from service import FileDao, ClientFilesDao, ClientDao
 from storage import AzureStorage
 from utils import FileUtil, ShortUrlUtil
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-MAX_FILE_SIZE = 20 * 1024 * 1024
 
 files_bp = Blueprint('files', __name__)
 
@@ -27,10 +24,14 @@ def files_upload():
                 message = "No file part"
             ), 400
 
+        client_parameters = ClientDao.find_client_plan_parameters(client_id)
+
+        extensions = client_parameters['extensions']
+
         file = request.files['file']
         extension = FileUtil.extract_file_extension(file.filename)
 
-        if extension not in ALLOWED_EXTENSIONS:
+        if extension not in extensions:
             return jsonify(
                 message = "File extension not allowed"
             ), 400
@@ -39,9 +40,19 @@ def files_upload():
         file_size = file.tell()
         file.seek(0)
 
-        if file_size > MAX_FILE_SIZE:
+        max_size = client_parameters['maxSize']
+
+        if file_size >= max_size:
             return jsonify(
-                message = f"File too large, max value accepted is {MAX_FILE_SIZE / 1024 / 1024}mb"
+                message = f"File too large, max value accepted is {max_size / 1024 / 1024}mb"
+            )
+
+        client_files_count = ClientFilesDao.get_count_client_files(client_id)
+        max_upload = client_parameters['maxFilesUpload']
+
+        if client_files_count > max_upload:
+            return jsonify(
+                message = "Client has reached max amount of uploads"
             )
 
         file_id = str(uuid.uuid4())
@@ -58,7 +69,6 @@ def files_upload():
         )
     except Exception as ex:
         return jsonify(
-            message = "Something went wrong",
             error = ex.args
         ), 500
 
