@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request, jsonify
 from gunicorn.app.base import BaseApplication
 
 from routes.Client import clients_bp
@@ -14,6 +14,17 @@ app.register_blueprint(files_bp, url_prefix="/fileshare/")
 app.register_blueprint(commons_bp, url_prefix="/fileshare/")
 app.register_blueprint(clients_bp, url_prefix="/fileshare/")
 app.register_blueprint(plans_bp, url_prefix="/fileshare/")
+
+
+@app.before_request
+def verify_api_key():
+    api_key = request.headers.get('Api-Key')
+
+    if api_key is None or os.getenv("API_KEY") != api_key:
+        return jsonify(message = "API key is invalid"), 401
+
+    return None
+
 
 if __name__ == '__main__':
     load_dotenv()
