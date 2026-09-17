@@ -1,5 +1,6 @@
 from flask import jsonify, request, Blueprint
 from service import ClientDao, PlanDao
+from service.ClientDao import DEFAULT_PLAN
 
 clients_bp = Blueprint('clients_bp', __name__, url_prefix='/clients')
 
@@ -11,7 +12,8 @@ def insert_client():
         ClientDao.insert_client(client_id)
 
         return jsonify(
-            message = f"Client {client_id} has been created"
+            message = f"Client {client_id} has been created",
+            plan = PlanDao.find_plan(DEFAULT_PLAN)
         ), 201
     except Exception as ex:
         print(ex)
