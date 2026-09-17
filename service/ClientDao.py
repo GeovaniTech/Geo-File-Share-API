@@ -2,13 +2,15 @@ import datetime
 
 from utils.DatabaseUtil import get_db_connection
 
-def insert_client(client_id, plan_id):
+DEFAULT_PLAN = "VISITANT"
+
+def insert_client(client_id):
     conn = get_db_connection()
 
     sql = "INSERT INTO Client (id, plan_id, created_at, updated_at) VALUES (%s, %s, %s, %s)"
 
     cursor = conn.cursor()
-    cursor.execute(sql, (client_id, plan_id, datetime.datetime.now(), datetime.datetime.now()))
+    cursor.execute(sql, (client_id, DEFAULT_PLAN, datetime.datetime.now(), datetime.datetime.now()))
     conn.commit()
     conn.close()
 

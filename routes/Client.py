@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from service import ClientDao
+from service import ClientDao, PlanDao
 
 clients_bp = Blueprint('clients_bp', __name__, url_prefix='/clients')
 
@@ -7,9 +7,8 @@ clients_bp = Blueprint('clients_bp', __name__, url_prefix='/clients')
 def insert_client():
     try:
         client_id = request.json['clientId']
-        plan_id = request.json['planId']
 
-        ClientDao.insert_client(client_id, plan_id)
+        ClientDao.insert_client(client_id)
 
         return jsonify(
             message = f"Client {client_id} has been created"
