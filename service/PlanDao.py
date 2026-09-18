@@ -49,5 +49,5 @@ def find_plan(plan_id):
     if plan is None:
         return None
     else :
-        return json.dumps(plan, default=str)
+        return plan
 

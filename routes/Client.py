@@ -13,7 +13,9 @@ def insert_client():
 
         return jsonify(
             message = f"Client {client_id} has been created",
-            plan = PlanDao.find_plan(DEFAULT_PLAN)
+            plan = jsonify(
+                PlanDao.find_plan(DEFAULT_PLAN)
+            )
         ), 201
     except Exception as ex:
         print(ex)

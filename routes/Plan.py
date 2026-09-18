@@ -37,7 +37,9 @@ def get_plan():
         if plan is None:
             return jsonify({"planId": plan_id}), 404
         else:
-            return plan, 200
+            return jsonify(
+                plan
+            ), 200
     except Exception as ex:
         return jsonify(
             message = ex.args
