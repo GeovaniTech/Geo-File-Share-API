@@ -50,7 +50,7 @@ def files_upload():
         client_files_count = ClientFilesDao.get_count_client_files(client_id)
         max_upload = client_parameters['maxFilesUpload']
 
-        if client_files_count > max_upload:
+        if client_files_count >= max_upload:
             return jsonify(
                 message = "Client has reached max amount of uploads"
             )
