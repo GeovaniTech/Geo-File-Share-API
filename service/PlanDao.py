@@ -4,6 +4,7 @@ from datetime import datetime
 from psycopg2.extras import RealDictCursor
 
 from utils.DatabaseUtil import get_db_connection
+from firebase_admin import db
 
 
 def upsert_plan(plan_id, title, parameters, price, currency, is_active):
@@ -35,6 +36,11 @@ def upsert_plan(plan_id, title, parameters, price, currency, is_active):
 
     conn.commit()
     conn.close()
+
+    db.reference("/plans").update({
+        "id": plan_id,
+        "parameters": find_plan(plan_id)['parameters']
+    })
 
     return operation
 

@@ -1,4 +1,5 @@
 import os
+import firebase_admin
 
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -8,6 +9,7 @@ from routes.Client import clients_bp
 from routes.Files import files_bp
 from routes.Common import commons_bp
 from routes.Plan import plans_bp
+from firebase_admin import credentials
 
 app = Flask(__name__)
 app.register_blueprint(files_bp, url_prefix="/fileshare/")
@@ -15,6 +17,10 @@ app.register_blueprint(commons_bp, url_prefix="/fileshare/")
 app.register_blueprint(clients_bp, url_prefix="/fileshare/")
 app.register_blueprint(plans_bp, url_prefix="/fileshare/")
 
+cred = credentials.Certificate("google-services.json")
+firebase_admin.initialize_app(cred, {
+    "databaseURL": "https://geoshare-app-default-rtdb.firebaseio.com/",
+})
 
 @app.before_request
 def verify_api_key():
