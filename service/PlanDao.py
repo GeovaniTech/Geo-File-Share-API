@@ -37,8 +37,7 @@ def upsert_plan(plan_id, title, parameters, price, currency, is_active):
     conn.commit()
     conn.close()
 
-    db.reference("/plans").update({
-        "id": plan_id,
+    db.reference(f"/plans/{plan_id}").update({
         "parameters": parameters
     })
 
