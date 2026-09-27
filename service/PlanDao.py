@@ -39,7 +39,7 @@ def upsert_plan(plan_id, title, parameters, price, currency, is_active):
 
     db.reference("/plans").update({
         "id": plan_id,
-        "parameters": find_plan(plan_id)['parameters']
+        "parameters": parameters
     })
 
     return operation
