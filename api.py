@@ -11,11 +11,14 @@ from routes.Common import commons_bp
 from routes.Plan import plans_bp
 from firebase_admin import credentials
 
+from routes.Room import rooms_bp
+
 app = Flask(__name__)
 app.register_blueprint(files_bp, url_prefix="/fileshare/")
 app.register_blueprint(commons_bp, url_prefix="/fileshare/")
 app.register_blueprint(clients_bp, url_prefix="/fileshare/")
 app.register_blueprint(plans_bp, url_prefix="/fileshare/")
+app.register_blueprint(rooms_bp, url_prefix="/fileshare/")
 
 cred = credentials.Certificate("google-services.json")
 firebase_admin.initialize_app(cred, {
